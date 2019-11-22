@@ -1,0 +1,100 @@
+openapi: 3.0.0
+info:
+  title: Stwitter Service
+  description: REST Service for Posts and Comments
+  version: 0.0.1
+paths:
+  /:
+    get:
+      summary: get all posts
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/pvm"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/pvm"
+      summary: add post
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pvm"
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+   
+  /{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: get a post by id
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pvm"
+        404:
+          description: not found
+  /comment:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/comment"
+      summary: add comment
+      responses:
+        200:
+          description: success
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+components:
+  schemas:
+    pvm:
+      type: object
+      properties:
+        postId:
+          type: integer
+        postDate:
+          type: string
+        posterName:
+          type: string
+        post:
+          type: string
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+    comment:
+      type: object
+      properties:
+        commentId:
+          type: integer
+        postId:
+          type: integer
+        createDate:
+          type: string
+        commenterName:
+          type: string
+        comment:
+          type: string

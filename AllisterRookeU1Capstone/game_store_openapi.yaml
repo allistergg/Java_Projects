@@ -1,0 +1,474 @@
+openapi: 3.0.0
+info:
+  title: Game Store
+  description: REST service for game store
+  version: 0.0.1
+paths:
+  /console:
+    get:
+      summary: get all consoles
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/console"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/console"
+      summary: add console
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/console"
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+  /console/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: get a console
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/console"
+        404:
+          description: not found
+    delete:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: delete a console
+      responses:
+          204:
+            description: no content
+    put:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/console"
+      summary: edit a console
+      responses:
+        204:
+          description: no content
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+  /console/manufacturer/{manufacturer}:
+    get:
+      parameters:
+        - in: path
+          name: manufacturer
+          required: true
+          schema:
+            type: string
+      summary: get consoles by manufacturer
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/console"
+  /game:
+    get:
+      summary: get all games
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/game"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/game"
+      summary: add game
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game"
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+  /game/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: get a game
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game"
+        404:
+          description: not found
+    delete:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: delete a game
+      responses:
+          204:
+            description: no content
+    put:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/game"
+      summary: edit a game
+      responses:
+        204:
+          description: no content
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+  /game/esrb/{esrb}:
+    get:
+      parameters:
+        - in: path
+          name: esrb
+          required: true
+          schema:
+            type: string
+      summary: get game by esrb rating
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/game"
+  /game/title/{title}:
+    get:
+      parameters:
+        - in: path
+          name: title
+          required: true
+          schema:
+            type: string
+      summary: get game by title
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/game"
+  /game/studio/{studio}:
+    get:
+      parameters:
+        - in: path
+          name: studio
+          required: true
+          schema:
+            type: string
+      summary: get game by studio
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/game"
+  /tshirt:
+    get:
+      summary: get all tshirts
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/tshirt"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tshirt"
+      summary: add tshirt
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tshirt"
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+  /tshirt/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: get a tshirt
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tshirt"
+        404:
+          description: not found
+    delete:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      summary: delete a tshirt
+      responses:
+          204:
+            description: no content
+    put:
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tshirt"
+      summary: edit a tshirt
+      responses:
+        204:
+          description: no content
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+  /tshirt/size/{size}:
+    get:
+      parameters:
+        - in: path
+          name: size
+          required: true
+          schema:
+            type: string
+      summary: get tshirt by size
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tshirt"
+  /tshirt/color/{color}:
+    get:
+      parameters:
+        - in: path
+          name: color
+          required: true
+          schema:
+            type: string
+      summary: get tshirt by color
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tshirt"
+  /order:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/order"
+      summary: submit purchase order and create invoice
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/invoice"
+        400:
+          description: bad request
+        422:
+          description: unprocessable entity
+components:
+  schemas:
+    console:
+      type: object
+      properties:
+        consoleId:
+          type: integer
+        model:
+          type: string
+        manufacturer:
+          type: string
+        memoryAmount:
+          type: string
+        processor:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+    game:
+      type: object
+      properties:
+        gameId:
+          type: integer
+        title:
+          type: string
+        esrbRating:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        studio:
+          type: string
+        quantity:
+          type: integer
+    tshirt:
+      type: object
+      properties:
+        tShirtId:
+          type: integer
+        size:
+          type: string
+        color:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+    order:
+      type: object
+      properties:
+        name:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        itemType:
+          type: string
+        itemId:
+          type: integer
+        quantity:
+          type: integer
+    invoice:
+      type: object
+      properties:
+        invoiceId:
+          type: integer
+        name:
+          type: string
+        street: 
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipcode:
+          type: string
+        itemType:
+          type: string
+        itemId:
+          type: integer
+        unitPrice:
+          type: number
+        quantity:
+          type: integer
+        subtotal:
+          type: number
+        tax:
+          type: number
+        processingFee:
+          type: number
+        total:
+          type: number
+        
+            
+              
