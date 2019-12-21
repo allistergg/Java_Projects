@@ -10,14 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(ConsoleController.class)
 public class ConsoleControllerTest {
+
+    @MockBean
+    DataSource dataSource;
 
     @Autowired
     private MockMvc mockMvc;
@@ -79,6 +86,7 @@ public class ConsoleControllerTest {
     }
 
     @Test
+    @WithMockUser(username="managerUser", roles = {"MANAGER"})
     public void addConsole() throws Exception {
 
         Console consoleNoId =
@@ -93,6 +101,7 @@ public class ConsoleControllerTest {
         when(service.addConsole(consoleNoId)).thenReturn(console);
 
         this.mockMvc.perform(post("/console/")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -102,6 +111,7 @@ public class ConsoleControllerTest {
         inputJson = mapper.writeValueAsString(consoleNoId);
 
         this.mockMvc.perform(post("/console/")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
@@ -114,6 +124,7 @@ public class ConsoleControllerTest {
         when(service.addConsole(consoleNoId)).thenThrow(new IllegalArgumentException());
 
         this.mockMvc.perform(post("/console/")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
@@ -121,6 +132,7 @@ public class ConsoleControllerTest {
         inputJson = "bad json";
 
         this.mockMvc.perform(post("/console/")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -132,14 +144,17 @@ public class ConsoleControllerTest {
 
 
     @Test
+    @WithMockUser(username="adminUser", roles = {"ADMIN"})
     public void deleteConsole() throws Exception {
 
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/console/1"))
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/console/1")
+                .with(csrf().asHeader()))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
     }
 
     @Test
+    @WithMockUser(username="staffUser", roles = {"STAFF"})
     public void updateConsole() throws Exception {
         Console console =
                 new Console(1, "XBox", "Microsoft", "8GB", "Intel", new BigDecimal("199.99"), 15);
@@ -147,12 +162,14 @@ public class ConsoleControllerTest {
         String inputJson = mapper.writeValueAsString(console);
 
         this.mockMvc.perform(put("/console/1")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
         this.mockMvc.perform(put("/console/9999")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());

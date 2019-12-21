@@ -10,15 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(GameController.class)
 public class GameControllerTest {
 
+    @MockBean
+    DataSource dataSource;
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,6 +82,7 @@ public class GameControllerTest {
     }
 
     @Test
+    @WithMockUser(username="managerUser", roles = {"MANAGER"})
     public void addGame() throws Exception {
 
         Game game = new Game(10,"Fifa 2020", "AA", "soccer", new BigDecimal("9.99"), "EA Sports", 4);
@@ -89,6 +95,7 @@ public class GameControllerTest {
         when(service.addGame(gameNoId)).thenReturn(game);
 
         this.mockMvc.perform(post("/game/")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -96,14 +103,17 @@ public class GameControllerTest {
     }
 
     @Test
+    @WithMockUser(username="adminUser", roles = {"ADMIN"})
     public void deleteGame() throws Exception {
 
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/game/10"))
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/game/10")
+                .with(csrf().asHeader()))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
     }
 
     @Test
+    @WithMockUser(username="staffUser", roles = {"STAFF"})
     public void updateGame() throws Exception {
 
         Game game = new Game(10,"Fifa 2020", "AA", "soccer", new BigDecimal("9.99"), "EA Sports", 4);
@@ -111,11 +121,13 @@ public class GameControllerTest {
         String inputJson = mapper.writeValueAsString(game);
 
         this.mockMvc.perform(put("/game/10")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
         this.mockMvc.perform(put("/game/9999")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());

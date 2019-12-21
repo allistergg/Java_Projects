@@ -10,15 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TShirtController.class)
 public class TShirtControllerTest {
 
+
+    @MockBean
+    DataSource dataSource;
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,6 +83,7 @@ public class TShirtControllerTest {
     }
 
     @Test
+    @WithMockUser(username="managerUser", roles = {"MANAGER"})
     public void addTShirt() throws Exception{
 
         TShirt tShirt = new TShirt(101,"M", "green", "blank", new BigDecimal("9.99"), 10);
@@ -89,6 +96,7 @@ public class TShirtControllerTest {
         when(service.addTShirt(tShirtNoId)).thenReturn(tShirt);
 
         this.mockMvc.perform(post("/tshirt/")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -96,14 +104,17 @@ public class TShirtControllerTest {
     }
 
     @Test
+    @WithMockUser(username="adminUser", roles = {"ADMIN"})
     public void deleteTShirt() throws Exception {
 
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/tshirt/101"))
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/tshirt/101")
+                .with(csrf().asHeader()))
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""));
     }
 
     @Test
+    @WithMockUser(username="staffUser", roles = {"STAFF"})
     public void updateTShirt() throws Exception {
 
         TShirt tShirt = new TShirt(101,"M", "green", "blank", new BigDecimal("9.99"), 10);
@@ -111,11 +122,13 @@ public class TShirtControllerTest {
         String inputJson = mapper.writeValueAsString(tShirt);
 
         this.mockMvc.perform(put("/tshirt/101")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
         this.mockMvc.perform(put("/tshirt/9999")
+                .with(csrf().asHeader())
                 .content(inputJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
